@@ -62,15 +62,15 @@ describe('ReactTestUtils', function() {
 
     var shallowRenderer = ReactTestUtils.createRenderer();
     expect(() => shallowRenderer.render(SomeComponent)).toThrow(
-      'Invariant Violation: ReactShallowRenderer render(): Invalid component ' +
-      'element. Instead of passing a component class, make sure to ' +
-      'instantiate it by passing it to React.createElement.'
+      'ReactShallowRenderer render(): Invalid component element. Instead of ' +
+      'passing a component class, make sure to instantiate it by passing it ' +
+      'to React.createElement.'
     );
     expect(() => shallowRenderer.render(<div />)).toThrow(
-      'Invariant Violation: ReactShallowRenderer render(): Shallow rendering ' +
-      'works only with custom components, not primitives (div). Instead of ' +
-      'calling `.render(el)` and inspecting the rendered output, look at ' +
-      '`el.props` directly instead.'
+      'ReactShallowRenderer render(): Shallow rendering works only with ' +
+      'custom components, not primitives (div). Instead of calling ' +
+      '`.render(el)` and inspecting the rendered output, look at `el.props` ' +
+      'directly instead.'
     );
   });
 
@@ -174,6 +174,47 @@ describe('ReactTestUtils', function() {
     shallowRenderer.render(<SimpleComponent />);
     var result = shallowRenderer.getRenderOutput();
     expect(result).toEqual(<div />);
+  });
+
+  it('can shallowly render components with ref as function', function() {
+    var SimpleComponent = React.createClass({
+      getInitialState: function() {
+        return {clicked: false};
+      },
+      handleUserClick: function() {
+        this.setState({ clicked: true });
+      },
+      render: function() {
+        return <div ref={() => {}} onClick={this.handleUserClick} className={this.state.clicked ? 'clicked' : ''}></div>;
+      },
+    });
+
+    var shallowRenderer = ReactTestUtils.createRenderer();
+    shallowRenderer.render(<SimpleComponent />);
+    var result = shallowRenderer.getRenderOutput();
+    expect(result.type).toEqual('div');
+    expect(result.props.className).toEqual('');
+    result.props.onClick();
+
+    result = shallowRenderer.getRenderOutput();
+    expect(result.type).toEqual('div');
+    expect(result.props.className).toEqual('clicked');
+  });
+
+  it('can setState in componentWillMount when shallow rendering', function() {
+    var SimpleComponent = React.createClass({
+      componentWillMount() {
+        this.setState({groovy: 'doovy'});
+      },
+      render() {
+        return <div>{this.state.groovy}</div>;
+      },
+    });
+
+    var shallowRenderer = ReactTestUtils.createRenderer();
+    shallowRenderer.render(<SimpleComponent />);
+    var result = shallowRenderer.getRenderOutput();
+    expect(result).toEqual(<div>doovy</div>);
   });
 
   it('can pass context when shallowly rendering', function() {
@@ -377,15 +418,20 @@ describe('ReactTestUtils', function() {
   });
 
   it('should change the value of an input field', function() {
-    var handler = jasmine.createSpy('spy');
+    var obj = {
+      handler: function(e) {
+        e.persist();
+      },
+    };
+    spyOn(obj, 'handler').andCallThrough();
     var container = document.createElement('div');
-    var instance = ReactDOM.render(<input type="text" onChange={handler} />, container);
+    var instance = ReactDOM.render(<input type="text" onChange={obj.handler} />, container);
 
     var node = ReactDOM.findDOMNode(instance);
     node.value = 'giraffe';
     ReactTestUtils.Simulate.change(node);
 
-    expect(handler).toHaveBeenCalledWith(jasmine.objectContaining({target: node}));
+    expect(obj.handler).toHaveBeenCalledWith(jasmine.objectContaining({target: node}));
   });
 
   it('should change the value of an input field in a component', function() {
@@ -399,15 +445,20 @@ describe('ReactTestUtils', function() {
       },
     });
 
-    var handler = jasmine.createSpy('spy');
+    var obj = {
+      handler: function(e) {
+        e.persist();
+      },
+    };
+    spyOn(obj, 'handler').andCallThrough();
     var container = document.createElement('div');
-    var instance = ReactDOM.render(<SomeComponent handleChange={handler} />, container);
+    var instance = ReactDOM.render(<SomeComponent handleChange={obj.handler} />, container);
 
     var node = ReactDOM.findDOMNode(instance.refs.input);
     node.value = 'zebra';
     ReactTestUtils.Simulate.change(node);
 
-    expect(handler).toHaveBeenCalledWith(jasmine.objectContaining({target: node}));
+    expect(obj.handler).toHaveBeenCalledWith(jasmine.objectContaining({target: node}));
   });
 
   it('can scry with stateless components involved', function() {

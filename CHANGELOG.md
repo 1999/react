@@ -1,3 +1,69 @@
+## 0.14.8 (March 29, 2016)
+
+### React
+- Fixed memory leak when rendering on the server
+
+## 0.14.7 (January 28, 2016)
+
+### React
+- Fixed bug with `<option>` tags when using `dangerouslySetInnerHTML`
+- Fixed memory leak in synthetic event system
+
+### React TestUtils Add-on
+- Fixed bug with calling `setState` in `componentWillMount` when using shallow rendering
+
+
+## 0.14.6 (January 6, 2016)
+
+### React
+- Updated `fbjs` dependency to pick up change affecting handling of undefined document.
+
+
+## 0.14.5 (December 29, 2015)
+
+### React
+- More minor internal changes for better compatibility with React Native
+
+
+## 0.14.4 (December 29, 2015)
+
+### React
+- Minor internal changes for better compatibility with React Native
+
+### React DOM
+- The `autoCapitalize` and `autoCorrect` props are now set as attributes in the DOM instead of properties to improve cross-browser compatibility
+- Fixed bug with controlled `<select>` elements not handling updates properly
+
+### React Perf Add-on
+- Some DOM operation names have been updated for clarity in the output of `.printDOM()`
+
+
+## 0.14.3 (November 18, 2015)
+
+### React DOM
+- Added support for `nonce` attribute for `<script>` and `<style>` elements
+- Added support for `reversed` attribute for `<ol>` elements
+
+### React TestUtils Add-on
+- Fixed bug with shallow rendering and function refs
+
+### React CSSTransitionGroup Add-on
+- Fixed bug resulting in timeouts firing incorrectly when mounting and unmounting rapidly
+
+### React on Bower
+- Added `react-dom-server.js` to expose `renderToString` and `renderToStaticMarkup` for usage in the browser
+
+
+## 0.14.2 (November 2, 2015)
+
+### React DOM
+- Fixed bug with development build preventing events from firing in some versions of Internet Explorer & Edge
+- Fixed bug with development build when using es5-sham in older versions of Internet Explorer
+- Added support for `integrity` attribute
+- Fixed bug resulting in `children` prop being coerced to a string for custom elements, which was not the desired behavior
+- Moved `react` from `dependencies` to `peerDependencies` to match expectations and align with `react-addons-*` packages
+
+
 ## 0.14.1 (October 28, 2015)
 
 ### React DOM

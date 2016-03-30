@@ -78,6 +78,27 @@ React.createClass({
 });
 ```
 
+### Single Child
+
+With `React.PropTypes.element` you can specify that only a single child can be passed to a component as children.
+
+```javascript
+var MyComponent = React.createClass({
+  propTypes: {
+    children: React.PropTypes.element.isRequired
+  },
+
+  render: function() {
+    return (
+      <div>
+        {this.props.children} // This must be exactly one element or it will warn.
+      </div>
+    );
+  }
+
+});
+```
+
 ## Default Prop Values
 
 React lets you define default values for your `props` in a very declarative way:
@@ -113,28 +134,6 @@ ReactDOM.render(
   </CheckLink>,
   document.getElementById('example')
 );
-```
-
-## Single Child
-
-With `React.PropTypes.element` you can specify that only a single child can be passed to
-a component as children.
-
-```javascript
-var MyComponent = React.createClass({
-  propTypes: {
-    children: React.PropTypes.element.isRequired
-  },
-
-  render: function() {
-    return (
-      <div>
-        {this.props.children} // This must be exactly one element or it will throw.
-      </div>
-    );
-  }
-
-});
 ```
 
 ## Mixins
@@ -244,14 +243,15 @@ ReactDOM.render(<HelloMessage name="Sebastian" />, mountNode);
 Or using the new ES6 arrow syntax:
 
 ```javascript
-var HelloMessage = (props) => <div>Hello {props.name}</div>;
+const HelloMessage = (props) => <div>Hello {props.name}</div>;
 ReactDOM.render(<HelloMessage name="Sebastian" />, mountNode);
 ```
 
 This simplified component API is intended for components that are pure functions of their props. These components must not retain internal state, do not have backing instances, and do not have the component lifecycle methods. They are pure functional transforms of their input, with zero boilerplate.
+However, you may still specify `.propTypes` and `.defaultProps` by setting them as properties on the function, just as you would set them on an ES6 class.
 
 > NOTE:
 >
 > Because stateless functions don't have a backing instance, you can't attach a ref to a stateless function component. Normally this isn't an issue, since stateless functions do not provide an imperative API. Without an imperative API, there isn't much you could do with an instance anyway. However, if a user wants to find the DOM node of a stateless function component, they must wrap the component in a stateful component (eg. ES6 class component) and attach the ref to the stateful wrapper component.
 
-In an ideal world, most of your components would be stateless functions because these stateless components can follow a faster code path within the React core. This is the recommended pattern, when possible.
+In an ideal world, most of your components would be stateless functions because in the future we’ll also be able to make performance optimizations specific to these components by avoiding unnecessary checks and memory allocations. This is the recommended pattern, when possible.
